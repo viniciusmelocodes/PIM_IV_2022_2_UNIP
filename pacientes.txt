@@ -1,0 +1,15 @@
+codigo: 1
+nome: João
+cpf: 63215672057
+ddd: 62
+telefone: 987654321
+logradouro: Rua 8
+numero: 1
+bairro: Centro
+cidade: Goiania
+estado: Goias
+cep: 74000000
+data nascimento: 19031988
+e-mail: joao@gmail.com
+data diagnostico: 11112022
+comorbidades existentes: nenhuma

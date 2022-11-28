@@ -1,7 +1,6 @@
-1
-usuario1
-senha1
---------
-2
-usuario2
-senha2
+codigo: 1
+usuario: u1
+senha: s1
+codigo: 2
+usuario: usuario2
+senha: senha2
