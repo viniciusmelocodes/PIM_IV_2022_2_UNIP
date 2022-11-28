@@ -82,6 +82,7 @@ int main()
     int anoNascimento = 0;
     int anoAtual = 0;
     int possuiComorbidades = 1;
+    int pacienteGrupoRisco = 0;
 
     // Para limpar buffer de cadastro de pacientes
 	char temp;
@@ -389,6 +390,8 @@ int main()
                         fclose(arquivoPacientes);
 
                         // Analise se paciente é de grupo de risco
+                        pacienteGrupoRisco = 0;
+
                         strncpy(anoNascimentoAux, &data_nascimento[4], 4);
                         strip(comorbidades_existentes);
                         strip(cep);
@@ -416,10 +419,17 @@ int main()
                                 fprintf(arquivoPacientesGrupoRisco, "\nidade: %d", anoAtual - anoNascimento);
 
                                 fclose(arquivoPacientesGrupoRisco);
+
+                                pacienteGrupoRisco = 1;
                             }
                         }
 
-                        printf("\n >>> Novo paciente cadastrado com sucesso! <<<\n\nConfirme com S para sair.\n");
+                        if (pacienteGrupoRisco == 1) {
+                            printf("\n >>> Novo paciente cadastrado com sucesso! <<<\nPaciente eh do grupo de risco e foi cadastrado no arquivo paciente_grupo_risco.txt\n\nConfirme com S para sair.\n");
+                        } else {
+                            printf("\n >>> Novo paciente cadastrado com sucesso! <<<\n\nConfirme com S para sair.\n");
+                        }
+
                         scanf("%s", auxCadastro);
 
                         break;

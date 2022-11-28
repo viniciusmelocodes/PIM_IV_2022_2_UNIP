@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1669620703 source:/home/vinicius/dev/C/pim/main.c
+1669648558 source:/home/vinicius/dev/C/pim/main.c
 	<stdio.h>
 	<string.h>
 	<time.h>
