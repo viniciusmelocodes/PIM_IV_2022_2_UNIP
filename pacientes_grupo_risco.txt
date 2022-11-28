@@ -1,5 +1,3 @@
 codigo_paciente: 1
 cep: 74371400
-idade: 66codigo_paciente: 1
-cep: 74371400
 idade: 66
