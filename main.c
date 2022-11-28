@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 
 #define MAX_40 40
 #define MAX_100 100
@@ -31,6 +32,7 @@ struct Paciente {
 };
 
 struct PacienteGrupoRisco {
+    int codigo;
     char cep[8];
     int idade;
 };
@@ -60,10 +62,14 @@ void strip(char *s) {
 
 int main()
 {
-    struct Usuario listaUsuarios[MAX_9999];
-    struct Paciente listaPacientes[MAX_9999];
+    struct tm*                tempoAtual;
+
+    struct Usuario            listaUsuarios[MAX_9999];
+    struct Paciente           listaPacientes[MAX_9999];
+    struct PacienteGrupoRisco listaPacientesGrupoRisco[MAX_9999];
     FILE* arquivoUsuarios;
     FILE* arquivoPacientes;
+    FILE* arquivoPacientesGrupoRisco;
 
     int i = 1;
     int opcaoSelecionada;
@@ -72,14 +78,20 @@ int main()
     int loginAutorizado = 0;
     int codigoUsuario = 0;
     int codigoPaciente = 0;
+    int idade = 0;
+    int anoNascimento = 0;
+    int anoAtual = 0;
+    int possuiComorbidades = 1;
 
     // Para limpar buffer de cadastro de pacientes
 	char temp;
 
 	char auxCadastro[1];
+    char anoNascimentoAux[4];
     char linhaArquivo[MAX_512];
 
     char codigoAux[MAX_40];
+    char idadeAux[4];
     char usuario[MAX_40];
     char senha[MAX_40];
 
@@ -99,6 +111,9 @@ int main()
     char data_diagnostico[9];
     char comorbidades_existentes[300];
 
+    time_t dataHorarioAgora = time(NULL);
+
+    // Carga do arquivo de usuários
     arquivoUsuarios = fopen("usuarios.txt", "r");
 
     if (arquivoUsuarios == NULL) {
@@ -106,7 +121,6 @@ int main()
         return 0;
     }
 
-    // Carga do arquivo de usuários
     while (fgets(linhaArquivo, MAX_100, arquivoUsuarios) != NULL) {
         strncpy(codigoAux, &linhaArquivo[8], strlen(linhaArquivo));
         codigoUsuario = atoi(codigoAux);
@@ -216,6 +230,34 @@ int main()
     }
 
     fclose(arquivoPacientes);
+
+    // Carga do arquivo de pacientes de grupo de risco
+    arquivoPacientesGrupoRisco = fopen("pacientes_grupo_risco.txt", "r");
+
+    if (arquivoPacientesGrupoRisco == NULL) {
+        printf("Erro ao abrir arquivo de pacientes de grupo de risco.");
+        return 0;
+    }
+
+    i = 1;
+
+    while (fgets(linhaArquivo, MAX_100, arquivoPacientesGrupoRisco) != NULL) {
+        strncpy(codigoAux, &linhaArquivo[17], strlen(linhaArquivo));
+        listaPacientesGrupoRisco[i].codigo = atoi(codigoAux);
+
+        fgets(linhaArquivo, MAX_40, arquivoPacientesGrupoRisco);
+        strncpy(cep, &linhaArquivo[5], strlen(linhaArquivo));
+        strcpy(listaPacientesGrupoRisco[i].cep, cep);
+        strip(listaPacientesGrupoRisco[i].cep);
+
+        fgets(linhaArquivo, MAX_40, arquivoPacientesGrupoRisco);
+        strncpy(idadeAux, &linhaArquivo[7], strlen(linhaArquivo));
+        listaPacientesGrupoRisco[i].idade = atoi(idadeAux);
+
+        i++;
+    }
+
+    fclose(arquivoPacientesGrupoRisco);
 
     // Menu Principal
     while (1) {
@@ -345,6 +387,37 @@ int main()
                         fprintf(arquivoPacientes, "\ncomorbidades existentes: %s", comorbidades_existentes);
 
                         fclose(arquivoPacientes);
+
+                        // Analise se paciente é de grupo de risco
+                        strncpy(anoNascimentoAux, &data_nascimento[4], 4);
+                        strip(comorbidades_existentes);
+                        strip(cep);
+                        tempoAtual = localtime(&dataHorarioAgora);
+                        anoAtual = (tempoAtual->tm_year + 1900);
+                        sscanf(anoNascimentoAux, "%04d", &anoNascimento);
+
+                        if (anoAtual - anoNascimento >= 65) {
+                            possuiComorbidades = strstr(comorbidades_existentes, "nenhuma");
+
+                            if (possuiComorbidades == 0) {
+                                possuiComorbidades = strstr(comorbidades_existentes, "-");
+                            }
+
+                            if (possuiComorbidades == 0) {
+                                arquivoPacientesGrupoRisco = fopen("pacientes_grupo_risco.txt", "a+");
+
+                                if (arquivoPacientesGrupoRisco == NULL) {
+                                    printf("Erro ao abrir arquivo de pacientes de grupo de risco.");
+                                    return 0;
+                                }
+
+                                fprintf(arquivoPacientesGrupoRisco, "\ncodigo_paciente: %d", codigoPaciente);
+                                fprintf(arquivoPacientesGrupoRisco, "\ncep: %s", cep);
+                                fprintf(arquivoPacientesGrupoRisco, "\nidade: %d", anoAtual - anoNascimento);
+
+                                fclose(arquivoPacientesGrupoRisco);
+                            }
+                        }
 
                         printf("\n >>> Novo paciente cadastrado com sucesso! <<<\n\nConfirme com S para sair.\n");
                         scanf("%s", auxCadastro);
