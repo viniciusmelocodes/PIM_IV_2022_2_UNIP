@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1669660429 source:c:\users\user\desktop\pim_iv_1430263\main.c
+	<stdio.h>
+	<string.h>
+	<time.h>
+

@@ -1,6 +1,6 @@
 codigo: 1
-usuario: u1
-senha: s1
+usuario: usuario1
+senha: senha1
 codigo: 2
 usuario: usuario2
 senha: senha2

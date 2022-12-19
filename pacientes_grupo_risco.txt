@@ -1,3 +1,6 @@
-codigo_paciente: 1
+codigo_paciente: 3
 cep: 74371400
+idade: 66
+codigo_paciente: 4
+cep: 74000000
 idade: 66
